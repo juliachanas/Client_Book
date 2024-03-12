@@ -1,10 +1,16 @@
-//endpoints seats
+const express = require('express');
+const router = express.Router();
+const { v4: uuidv4 } = require('uuid');
 
-app.get('/seats', (req, res) => {
+const db = require('./../db.js');
+
+//all seats
+router.route('/seats').get((req, res) => {
   res.json(db.seats);
 });
 
-app.get('/seats/:id', (req, res) => {
+//seat by id
+router.route('/seats/:id').get((req, res) => {
   const seat = db.seats.find((item) => item.id === req.params.id);
   if (seat) {
     res.json(seat);
@@ -13,7 +19,8 @@ app.get('/seats/:id', (req, res) => {
   }
 });
 
-app.post('/seats', (req, res) => {
+//add
+router.route('/seats').post((req, res) => {
   const { day, seat, client, email } = req.body;
   if (!day || !seat || !client || !email) {
     return res
@@ -36,7 +43,8 @@ app.post('/seats', (req, res) => {
   });
 });
 
-app.delete('/seats/:id', (req, res) => {
+//delete seat
+router.route('/seats/:id').delete((req, res) => {
   const seatId = req.params.id;
 
   const seat = db.seats.find((item) => item.id === seatId);
@@ -52,7 +60,8 @@ app.delete('/seats/:id', (req, res) => {
   return res.status(202).json({ message: 'Seats deleted successfully' });
 });
 
-app.put('/seats/:id', (req, res) => {
+//update
+router.route('/seats/:id').put((req, res) => {
   const seatId = req.params.id;
   const { day, seat, client, email } = req.body;
 
@@ -76,3 +85,5 @@ app.put('/seats/:id', (req, res) => {
       .json({ error: 'Day, seat, client and email are required' });
   }
 });
+
+module.exports = router;

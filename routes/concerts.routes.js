@@ -1,10 +1,17 @@
-// endpoints concerts
+const express = require('express');
+const router = express.Router();
+const { v4: uuidv4 } = require('uuid');
 
-app.get('/concerts', (req, res) => {
+const db = require('./../db.js');
+
+//all concerts
+
+router.route('/concerts').get((req, res) => {
   res.json(db.concerts);
 });
 
-app.get('/concerts/:id', (req, res) => {
+// concert  by id
+router.route('/concerts/:id').get((req, res) => {
   const concert = db.concerts.find((item) => item.id === req.params.id);
   if (concert) {
     res.json(concert);
@@ -13,7 +20,8 @@ app.get('/concerts/:id', (req, res) => {
   }
 });
 
-app.post('/concerts', (req, res) => {
+//add concert
+router.route('/concerts').post((req, res) => {
   const { performer, genre, price, day, image } = req.body;
   if (!performer || !genre || !price || !day || !image) {
     return res
@@ -37,7 +45,8 @@ app.post('/concerts', (req, res) => {
   });
 });
 
-app.delete('/concerts/:id', (req, res) => {
+//delete concert
+router.route('/concerts/:id').delete((req, res) => {
   const concertId = req.params.id;
 
   const concert = db.concerts.find((item) => item.id === concertId);
@@ -53,7 +62,8 @@ app.delete('/concerts/:id', (req, res) => {
   return res.status(202).json({ message: 'Concert deleted successfully' });
 });
 
-app.put('/concerts/:id', (req, res) => {
+//update concert
+router.route('/concerts/:id').put((req, res) => {
   const concertId = req.params.id;
   const { performer, genre, price, day, image } = req.body;
 
@@ -78,3 +88,5 @@ app.put('/concerts/:id', (req, res) => {
       .json({ error: 'Performer, genre, price and day are required' });
   }
 });
+
+module.exports = router;
