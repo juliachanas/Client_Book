@@ -22,7 +22,6 @@ const SeatChooser = ({ chosenDay, chosenSeat, updateSeat }) => {
       { transports: ['websocket'] }
     );
     socket.on('seatsUpdated', (seats) => {
-      console.log('XYZ', seats);
       dispatch(loadSeats(seats));
     });
   }, [dispatch]);
@@ -30,6 +29,10 @@ const SeatChooser = ({ chosenDay, chosenSeat, updateSeat }) => {
   const isTaken = (seatId) => {
     return seats.some((item) => item.seat === seatId && item.day === chosenDay);
   };
+
+  const allSeats = 50;
+  const freeSeats =
+    allSeats - seats.filter((item) => item.day === chosenDay).length;
 
   const prepareSeat = (seatId) => {
     if (seatId === chosenSeat)
@@ -80,6 +83,11 @@ const SeatChooser = ({ chosenDay, chosenSeat, updateSeat }) => {
       {requests['LOAD_SEATS'] && requests['LOAD_SEATS'].error && (
         <Alert color='warning'>Couldn't load seats...</Alert>
       )}
+      <div>
+        <small id='pickHelpThree' className='form-text text-muted  ms-2'>
+          Free seats {freeSeats}/{allSeats}
+        </small>
+      </div>
     </div>
   );
 };
