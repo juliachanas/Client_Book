@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
+import io from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Progress, Alert } from 'reactstrap';
 import {
   getSeats,
   loadSeatsRequest,
   getRequests,
+  loadSeats,
 } from '../../../redux/seatsRedux';
 import './SeatChooser.scss';
 
@@ -15,12 +17,14 @@ const SeatChooser = ({ chosenDay, chosenSeat, updateSeat }) => {
 
   useEffect(() => {
     dispatch(loadSeatsRequest());
-
-    const interval = setInterval(() => {
-      dispatch(loadSeatsRequest());
-    }, 120000);
-
-    return () => clearInterval(interval);
+    const socket = io(
+      process.env.NODE_ENV === 'production' ? '' : 'ws://localhost:8000',
+      { transports: ['websocket'] }
+    );
+    socket.on('seatsUpdated', (seats) => {
+      console.log('XYZ', seats);
+      dispatch(loadSeats(seats));
+    });
   }, [dispatch]);
 
   const isTaken = (seatId) => {
